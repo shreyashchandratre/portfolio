@@ -1119,21 +1119,58 @@
       });
     });
 
-    // ── Contact form ────────────────────────────────────────────────────
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
+    // ── Contact form — Web3Forms integration ────────────────────────────
+    const WEB3FORMS_KEY = 'YOUR_ACCESS_KEY'; // ← paste your key here
+
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
+
       const name    = document.getElementById('form-name').value.trim();
       const email   = document.getElementById('form-email').value.trim();
       const message = document.getElementById('form-message').value.trim();
       if (!name || !email || !message) return;
-      this.querySelectorAll('input, textarea, button').forEach(el => el.disabled = true);
-      const success = document.getElementById('form-success');
-      success.style.display = 'block';
-      setTimeout(() => {
-        this.reset();
-        this.querySelectorAll('input, textarea, button').forEach(el => el.disabled = false);
-        setTimeout(() => { success.style.display = 'none'; }, 5000);
-      }, 1200);
+
+      const submitBtn = this.querySelector('button[type="submit"]');
+      const success   = document.getElementById('form-success');
+      const fields    = this.querySelectorAll('input, textarea, button');
+
+      // Disable fields & show loading state
+      fields.forEach(el => el.disabled = true);
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject:    `New message from ${name} — Portfolio`,
+            from_name:  'Portfolio Contact Form',
+            name,
+            email,
+            message
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          success.textContent = '// Message sent. I\'ll get back to you soon.';
+          success.style.color = 'var(--accent)';
+          success.style.display = 'block';
+          this.reset();
+          setTimeout(() => { success.style.display = 'none'; }, 6000);
+        } else {
+          throw new Error(data.message || 'Submission failed');
+        }
+      } catch (err) {
+        success.textContent = '// Error: ' + (err.message || 'Something went wrong. Try emailing directly.');
+        success.style.color = '#ff4444';
+        success.style.display = 'block';
+      } finally {
+        fields.forEach(el => el.disabled = false);
+        submitBtn.textContent = 'Send Message';
+      }
     });
   </script>
 </body>

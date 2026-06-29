@@ -412,13 +412,6 @@
       background: rgba(0,255,102,0.12);
       border: 1px solid var(--accent);
       padding: 3px 10px;
-      margin-left: auto;
-    }
-    .project-actions {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
     }
     .project-install-btn {
       display: inline-flex;
@@ -428,9 +421,10 @@
       font-size: 11px;
       color: #000;
       background: var(--accent);
-      padding: 7px 14px;
+      padding: 8px 16px;
       text-decoration: none;
       letter-spacing: 0.04em;
+      margin-top: 12px;
       transition: opacity 0.2s ease;
     }
     .project-install-btn:hover { opacity: 0.85; }
